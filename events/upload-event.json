@@ -1,0 +1,98 @@
+{
+    "resource": "/upload",
+    "path": "/upload",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Authorization": "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYwYzVhYTMxLTIyMWQtNDY0Yy05MDU0LWFlOGM1NmMxYTQxMyIsImlhdCI6MTYyMDYxMDY0Ni4wOTY1MDJ9.QKtaHB2ERe1g-Gw0XsHg604yTWrajJH95lL7Tcw2l4c",
+        "Cache-Control": "no-cache",
+        "Content-Type": "multipart/form-data; boundary=--------------------------568728649640937823699218",
+        "Host": "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com",
+        "Postman-Token": "a18dcbf0-1cae-4b6d-929e-4e8804c0bd10",
+        "User-Agent": "PostmanRuntime/7.26.10",
+        "X-Amzn-Trace-Id": "Root=1-60a18e90-67118ab442364ef7484c5660",
+        "X-Forwarded-For": "104.183.106.146",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept": [
+            "*/*"
+        ],
+        "Accept-Encoding": [
+            "gzip, deflate, br"
+        ],
+        "Authorization": [
+            "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYwYzVhYTMxLTIyMWQtNDY0Yy05MDU0LWFlOGM1NmMxYTQxMyIsImlhdCI6MTYyMDYxMDY0Ni4wOTY1MDJ9.QKtaHB2ERe1g-Gw0XsHg604yTWrajJH95lL7Tcw2l4c"
+        ],
+        "Cache-Control": [
+            "no-cache"
+        ],
+        "Content-Type": [
+            "multipart/form-data; boundary=--------------------------568728649640937823699218"
+        ],
+        "Host": [
+            "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com"
+        ],
+        "Postman-Token": [
+            "a18dcbf0-1cae-4b6d-929e-4e8804c0bd10"
+        ],
+        "User-Agent": [
+            "PostmanRuntime/7.26.10"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-60a18e90-67118ab442364ef7484c5660"
+        ],
+        "X-Forwarded-For": [
+            "104.183.106.146"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "wycoje",
+        "authorizer": {
+            "principalId": "60c5aa31-221d-464c-9054-ae8c56c1a413",
+            "integrationLatency": 0,
+            "userId": "60c5aa31-221d-464c-9054-ae8c56c1a413"
+        },
+        "resourcePath": "/upload",
+        "httpMethod": "POST",
+        "extendedRequestId": "fcM2mEbxCYcFUzA=",
+        "requestTime": "16/May/2021:21:28:48 +0000",
+        "path": "/dev/upload",
+        "accountId": "191337286028",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "domainPrefix": "8p5lt3lu1b",
+        "requestTimeEpoch": 1621200528576,
+        "requestId": "2b630410-58d7-4bc4-8c06-043864ed146b",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "104.183.106.146",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "PostmanRuntime/7.26.10",
+            "user": null
+        },
+        "domainName": "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com",
+        "apiId": "8p5lt3lu1b"
+    },
+    "body": "LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLTU2ODcyODY0OTY0MDkzNzgyMzY5OTIxOA0KQ29udGVudC1EaXNwb3NpdGlvbjogZm9ybS1kYXRhOyBuYW1lPSJmaWxlIjsgZmlsZW5hbWU9ImNzdl9maXJzdF9yb3cuY3N2Ig0KQ29udGVudC1UeXBlOiB0ZXh0L2Nzdg0KDQp0aXRsZSxib2R5IGh0bWwsZGVzY3JpcHRpb24yLGRlc2NyaXB0aW9uMyxwcmljZSxvcHRpb24xIHZhbHVlLCxjb2xsZWN0aW9uLA0KYSBiaWcgY3VwLGEgdmVyeSB2ZXJ5IGJpZyBjdXAsdmVyeSBleHF1aXNpdGUsYW5kIHZlcnkgY2hlYXAsNSx3aGl0ZSwzNCxuZXcgQ29sbGVjdGlvbiwNCmEgZ3JlZW4gc2tpcnQsYSBncmVlbiBza2lydCB3aXRoIHBvY2tldHMsdmVyeSBuaWNlLGNsYXNzeSwyMyxncmVlbiwzLG5ldyBDb2xsZWN0aW9uLCANCmEgYmx1ZSBjaGFpcixhIHZlcnkgYmx1ZSBjaGFpcixtb2Rlcm4gbG9va2luZyxlYXN5IHRvIHB1dCB0b2dldGhlciwyMDAsYmx1ZSw0NSwsDQphbm90aGVyIGNvdWNoLCwsLCwsLCwNCmEgbmV3IG9uZSxuaWNlLGFuZCBuaWNlLCwsLCxjb2xsZWN0aW9uLA0KYSBiaWcgY2FuLGEgdmVyeSB2ZXJ5IGJpZyBjdXAsdmVyeSBleHF1aXNpdGUsYW5kIHZlcnkgY2hlYXAsNSx3aGl0ZSwzNCxuZXcgQ29sbGVjdGlvbiwNCmEgeWVsbG93IGVpZ2h0LGEgZ3JlZW4gc2tpcnQgd2l0aCBwb2NrZXRzLHZlcnkgbmljZSxjbGFzc3ksMjMsZ3JlZW4sMyxuZXcgQ29sbGVjdGlvbiwNCmJsYWNrIGNvdWNoLGEgdmVyeSBibHVlIGNoYWlyLG1vZGVybiBsb29raW5nLGVhc3kgdG8gcHV0IHRvZ2V0aGVyLDIwMCxibHVlLDQ1LCwNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS01Njg3Mjg2NDk2NDA5Mzc4MjM2OTkyMTgNCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsgbmFtZT0iaGVhZGVyLW9wdGlvbiINCg0KREVGQVVMVA0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLTU2ODcyODY0OTY0MDkzNzgyMzY5OTIxOA0KQ29udGVudC1EaXNwb3NpdGlvbjogZm9ybS1kYXRhOyBuYW1lPSJjb2x1bW4tbmFtZSINCg0KVGl0bGUNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS01Njg3Mjg2NDk2NDA5Mzc4MjM2OTkyMTgtLQ0K",
+    "isBase64Encoded": true
+}
