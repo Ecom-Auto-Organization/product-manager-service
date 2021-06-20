@@ -1,10 +1,11 @@
-import requests
 from datamodel.custom_exceptions import DataAccessError
 import dataaccess.data_model_utils as data_utils
+from utility import utils
 import boto3
 from botocore.exceptions import ClientError
 import os
 import logging
+import json
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,6 +21,7 @@ class ProductManagerDataAccess:
         bulk_manager_table = os.environ.get('bulk_manager_table')
         self._dynamodb = boto3.resource('dynamodb')
         self._bulk_manager_table =  self._dynamodb.Table(bulk_manager_table) 
+        self._sns_client = boto3.client('sns')
     
     def save_to_s3 (self, file_key, file_content):
         try:
@@ -46,3 +48,83 @@ class ProductManagerDataAccess:
             raise DataAccessError(error)
         except Exception as error:
             raise DataAccessError(error)
+
+
+    def get_file_by_id(self, file_id):
+        file_to_get = {'id': file_id}
+        db_file = data_utils.convert_to_db_file(file_to_get)
+
+        try:
+            response = self._bulk_manager_table.get_item(Key=db_file)
+            file_obj = None
+            if 'Item' in response:
+                db_file = response['Item']
+                file_obj = data_utils.extract_file_details(db_file)
+            return file_obj
+        except ClientError as error:
+            raise DataAccessError(error)
+
+
+    def basic_file_update(self, file_obj):
+        if 'id' not in file_obj:
+            raise KeyError('\'id\' value for file cannot be null')
+
+        db_file = data_utils.convert_to_db_file(file_obj)
+        # assign primary key to Keys Attribute and remove primary keys 
+        # from db_file since we don't intent to modify them
+        primary_key = {'PK': db_file['PK'], 'SK': db_file['SK']}
+        del db_file['PK']
+        del db_file['SK']
+
+        expression_attr_values = utils.get_expression_attr_values(db_file)
+        update_expression = utils.get_update_expression(expression_attr_values)
+        
+        try:
+            response = self._bulk_manager_table.update_item(
+                Key=primary_key,
+                UpdateExpression=update_expression,
+                ExpressionAttributeValues=expression_attr_values,
+                ReturnValues='UPDATED_NEW'
+            )
+
+            logging.info('Updated file successfully: %s', response)
+            return True
+        except ClientError as error:
+            raise DataAccessError(error)
+        except Exception as error:
+            raise DataAccessError(error)
+
+
+    def create_job(self, job):
+        db_job = data_utils.convert_to_db_job(job)
+
+        try:
+            response = self._bulk_manager_table.put_item(
+                Item=db_job
+            )
+
+            logging.info('Created Job successfully. Details: %s', db_job)
+            return data_utils.extract_job_details(db_job)
+        except ClientError as error:
+            raise DataAccessError(error)
+        except Exception as error:
+            raise DataAccessError(error)
+
+
+    def publish_to_product_generator(self, message):
+        import_topic = os.environ.get('import_topic_arn')
+        try:
+            response = self._sns_client.publish(
+                TopicArn=import_topic,
+                Message=json.dumps(message),
+                MessageAttributes={
+                    'process': {
+                        'DataType': 'String',
+                        'StringValue': 'generate-product'
+                    }
+                }
+            )
+            if 'MessageId' in response:
+                return True
+        except Exception as error:
+            raise Exception('Could not publish message successfully. Error:' + str(error))

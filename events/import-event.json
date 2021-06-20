@@ -1,0 +1,98 @@
+{
+    "resource": "/run",
+    "path": "/run",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Authorization": "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYwYzVhYTMxLTIyMWQtNDY0Yy05MDU0LWFlOGM1NmMxYTQxMyIsImlhdCI6MTYyMDYxMDY0Ni4wOTY1MDJ9.QKtaHB2ERe1g-Gw0XsHg604yTWrajJH95lL7Tcw2l4c",
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json",
+        "Host": "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com",
+        "Postman-Token": "eb102a07-d3e8-407e-a5ae-e030cbb8b956",
+        "User-Agent": "PostmanRuntime/7.26.10",
+        "X-Amzn-Trace-Id": "Root=1-60ac5cfc-55976656469de3e94dc750b1",
+        "X-Forwarded-For": "104.183.106.146",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept": [
+            "*/*"
+        ],
+        "Accept-Encoding": [
+            "gzip, deflate, br"
+        ],
+        "Authorization": [
+            "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYwYzVhYTMxLTIyMWQtNDY0Yy05MDU0LWFlOGM1NmMxYTQxMyIsImlhdCI6MTYyMDYxMDY0Ni4wOTY1MDJ9.QKtaHB2ERe1g-Gw0XsHg604yTWrajJH95lL7Tcw2l4c"
+        ],
+        "Cache-Control": [
+            "no-cache"
+        ],
+        "Content-Type": [
+            "application/json"
+        ],
+        "Host": [
+            "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com"
+        ],
+        "Postman-Token": [
+            "eb102a07-d3e8-407e-a5ae-e030cbb8b956"
+        ],
+        "User-Agent": [
+            "PostmanRuntime/7.26.10"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-60ac5cfc-55976656469de3e94dc750b1"
+        ],
+        "X-Forwarded-For": [
+            "104.183.106.146"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "ux86pl",
+        "authorizer": {
+            "principalId": "60c5aa31-221d-464c-9054-ae8c56c1a413",
+            "integrationLatency": 359,
+            "userId": "60c5aa31-221d-464c-9054-ae8c56c1a413"
+        },
+        "resourcePath": "/run",
+        "httpMethod": "POST",
+        "extendedRequestId": "f3N3gEyYiYcF7eg=",
+        "requestTime": "25/May/2021:02:12:12 +0000",
+        "path": "/dev/run",
+        "accountId": "191337286028",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "domainPrefix": "8p5lt3lu1b",
+        "requestTimeEpoch": 1621908732791,
+        "requestId": "dc2d83fd-278d-48f3-a0dc-71a099686a84",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "104.183.106.146",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "PostmanRuntime/7.26.10",
+            "user": null
+        },
+        "domainName": "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com",
+        "apiId": "8p5lt3lu1b"
+    },
+    "body": "{\n    \"taskType\": \"IMPORT_CREATE\",\n    \"executionType\": \"NOW\",\n    \"fileId\": \"41b373bf-b1c2-4a5a-99e6-990921627520\",\n    \"options\": {\n        \"generateVariants\": false,\n        \"addedTags\": [\"new ones\"],\n        \"defaultStatus\": \"ACTIVE\",\n        \"defaultPublishedStatus\": true\n    },\n    \"fileColumnDetails\": [\n        {\n            \"name\": \"title\",\n            \"index\": 0,\n            \"field\": \"title\"\n        },\n        {\n            \"name\": \"body html\",\n            \"index\": 1,\n            \"field\": \"descriptionHtml\"\n        },\n        {\n            \"name\": \"description2\",\n            \"index\": 2,\n            \"field\": \"descriptionHtml\"\n        },\n        {\n            \"name\": \"description3\",\n            \"index\": 3,\n            \"field\": \"descriptionHtml\"\n        },\n        {\n            \"name\": \"price\",\n            \"index\": 4,\n            \"field\": \"variantPrice\"\n        },\n        {\n            \"name\": \"image src\",\n            \"index\": 5,\n            \"field\": \"imageSrc\"\n        },\n        {\n            \"name\": \"image2\",\n            \"index\": 6,\n            \"field\": \"imageSrc\"\n        },\n        {\n            \"name\": \"image3\",\n            \"index\": 7,\n            \"field\": \"imageSrc\"\n        },\n        {\n            \"name\": \"option1 value\",\n            \"index\": 8,\n            \"field\": \"option1Value\",\n            \"defaultOptionName\": \"color\"\n        },\n        {\n            \"name\": \"inventory\",\n            \"index\": 9,\n            \"field\": \"variantQuantity\",\n            \"location\": \"123\"\n        },\n        {\n            \"name\": \"collection\",\n            \"index\": 10,\n            \"field\": \"customCollections\"\n        },\n        {\n            \"name\": \"inventory2\",\n            \"index\": 11,\n            \"field\": null\n        }\n    ]\n}",
+    "isBase64Encoded": false
+}

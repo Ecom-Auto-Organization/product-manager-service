@@ -1,12 +1,10 @@
 import pandas as pd
-import base64
 import io
 from datamodel.custom_exceptions import MissingArgumentError
 from datamodel.custom_exceptions import HeaderRowNotFoundError
 from datamodel.custom_exceptions import EmptySheetError
 from datamodel.custom_enums import FileType
 from datamodel.custom_enums import HeaderOption
-import json
 
 
 class FileReader:

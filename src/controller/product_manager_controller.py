@@ -38,6 +38,8 @@ class ProductManagerController:
 
         if self._path == '/upload' and self._method == HTTPMethod.POST.name:
             return self.__get_file_details()
+        elif self._path == '/run' and self._method == HTTPMethod.POST.name:
+            return self.__put_job()
         else:
             logging.error('Invalid Path. Path: ' + self._path)
             return {
@@ -75,6 +77,27 @@ class ProductManagerController:
             logging.error(error)
             return {
                 'statusCode': HTTPStatus.SERVICE_UNAVAILABLE
+            }
+        except Exception as error:
+            logging.error(error)
+            return {
+                'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR
+            }
+
+
+    def __put_job(self):
+        """Create job from task details and returns job details to user"""
+
+        try:
+            job_details = self._product_manager_service.create_job()
+            return {
+                'statusCode': HTTPStatus.OK,
+                'body': json.dumps(job_details)
+            }
+        except IllegalArgumentError as error:
+            logging.error(error)
+            return {
+                'statusCode': HTTPStatus.BAD_REQUEST
             }
         except Exception as error:
             logging.error(error)

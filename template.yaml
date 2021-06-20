@@ -27,6 +27,7 @@ Resources:
           bulk_manager_table: BulkManager
           shopify_api_version: 2021-04
           s3_file_upload_bucket: shopify-file-save
+          import_topic_arn: arn:aws:sns:us-east-2:191337286028:ProductImportTopic
 
 
 Outputs:

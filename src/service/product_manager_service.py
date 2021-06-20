@@ -6,10 +6,12 @@ from datamodel.custom_exceptions import IllegalArgumentError
 from dataaccess.product_manager_data_access import ProductManagerDataAccess
 from datamodel.custom_enums import FileType
 from datamodel.custom_enums import HeaderOption
+from datamodel.custom_enums import TaskType
+from datamodel.custom_enums import JobStatus
+from datamodel.custom_enums import ExecutionType
 from utility.file_reader_util import FileReader
 import logging
 import uuid
-import boto3
 
 logging.basicConfig(level=logging.INFO)
 
@@ -106,8 +108,85 @@ class ProductManagerService:
         file_details['fileId'] = file_id
         del file_details['headerRow']
 
-        is_object_saved = self._pm_access.save_to_s3(file_s3_key, form_content['file']['content'])
-        is_file_info_saved = self._pm_access.put_file(file_obj)
+        self._pm_access.save_to_s3(file_s3_key, form_content['file']['content'])
+        self._pm_access.put_file(file_obj)
 
         return file_details
+
+
+    def create_job(self):
+        task_type = TaskType[self._request_body.get('taskType')]
+        if task_type == TaskType.IMPORT_CREATE:
+            job_details = self.__create_import_job()
+            publish_message = {
+                'fileId': self._request_body.get('fileId'),
+                'jobId': job_details.get('jobId')
+            }
+            self._pm_access.publish_to_product_generator(publish_message)  
+            return job_details
+        else:
+            raise IllegalArgumentError('Unrecognized job type')
+    
+    
+    def __create_import_job(self):
+        """ Gets the details of a task request and create product import job to be run"""
+
+        task_type = TaskType[self._request_body.get('taskType')]
+        # execution_type = ExecutionType[self._request_body.get('executionType')]
+        file_id = self._request_body.get('fileId')
+        options = self._request_body.get('options')
+        file_column_details = self._request_body.get('fileColumnDetails')
+        shopify_field = self.__get_shopify_fields(file_column_details)
+
+        file_obj = self._pm_access.get_file_by_id(file_id)
+        updated_file = {'id': file_obj.get('id'), 'field_details': shopify_field}
+        job_id = '' + str(uuid.uuid4())
+        new_job = {
+            'id': job_id,
+            'user_id': self._user_context.get('userId'),
+            'status': JobStatus.SUBMITTED.name,
+            'type': task_type.name,
+            'options': options
+        }
+        self._pm_access.basic_file_update(updated_file)
+        created_job = self._pm_access.create_job(new_job)
+        return {
+            'jobId': created_job.get('id'),
+            'status': created_job.get('status'),
+            'jobType': created_job.get('type')
+        }
+
+
+    def __get_shopify_fields(self, file_column_details):
+        shopify_field = {}
+        location_set = set({})
+        
+        for column in file_column_details:
+            if column['field'] is None:
+                continue
+            if column['field'] in shopify_field:
+                if (
+                    column['field'] == 'metafields' or column['field'] == 'imageSrc' or 
+                    column['field'] == 'descriptionHtml' or column['field'] == 'customCollections'
+                ):
+                    column_field = column['field']
+                    del column['field']
+                    del column['name']
+                    shopify_field[column_field].append(column)
+                elif column['field'] == 'variantQuantity':
+                    if column['location'] not in location_set:
+                        column_field = column['field']
+                        del column['field']
+                        del column['name']
+                        shopify_field[column_field].append(column)
+                    else:
+                        continue
+            else:
+                column_field = column['field']
+                del column['field']
+                del column['name']
+                shopify_field[column_field] = [column]
+                if column_field == 'variantQuantity':
+                    location_set.add(column['location'])
+        return shopify_field
 
