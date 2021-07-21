@@ -3,7 +3,6 @@ from service.product_manager_service import ProductManagerService
 from datamodel.custom_exceptions import IllegalArgumentError
 from datamodel.custom_exceptions import DataAccessError
 from datamodel.custom_exceptions import UserAuthenticationError
-from datamodel.custom_exceptions import ShopifyUnauthorizedError
 from datamodel.custom_exceptions import HeaderRowNotFoundError
 from datamodel.custom_exceptions import EmptySheetError
 from http import HTTPStatus
@@ -40,6 +39,10 @@ class ProductManagerController:
             return self.__get_file_details()
         elif self._path == '/run' and self._method == HTTPMethod.POST.name:
             return self.__put_job()
+        elif self._path == '/users' and self._method == HTTPMethod.POST.name:
+            return self.__get_user_details()
+        elif self._path == '/jobs' and self._method == HTTPMethod.POST.name:
+            return self.__get_jobs()
         else:
             logging.error('Invalid Path. Path: ' + self._path)
             return {
@@ -60,26 +63,29 @@ class ProductManagerController:
                 'body': json.dumps(file_details)
             }
         except IllegalArgumentError as error:
+            logging.exception(error)
             return {
                 'statusCode': HTTPStatus.BAD_REQUEST
             }
         except EmptySheetError as error:
+            logging.exception(error)
             return {
                 'statusCode': HTTPStatus.BAD_REQUEST,
                 'body': json.dumps({'errorCode': 'NO_PRODUCT_FOUND'})
             }
         except HeaderRowNotFoundError as error:
+            logging.exception(error)
             return {
                 'statusCode': HTTPStatus.BAD_REQUEST,
                 'body': json.dumps({'errorCode': 'HEADER_NOT_FOUND'})
             }
         except DataAccessError as error:
-            logging.error(error)
+            logging.exception(error)
             return {
                 'statusCode': HTTPStatus.SERVICE_UNAVAILABLE
             }
         except Exception as error:
-            logging.error(error)
+            logging.exception(error)
             return {
                 'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR
             }
@@ -95,12 +101,55 @@ class ProductManagerController:
                 'body': json.dumps(job_details)
             }
         except IllegalArgumentError as error:
-            logging.error(error)
+            logging.exception(error)
             return {
                 'statusCode': HTTPStatus.BAD_REQUEST
             }
         except Exception as error:
-            logging.error(error)
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR
+            }
+
+
+    def __get_user_details(self):
+        try:
+            user_details = self._product_manager_service.get_user()
+            return {
+                'statusCode': HTTPStatus.OK,
+                'body': json.dumps(user_details)
+            }
+        except IllegalArgumentError as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.BAD_REQUEST
+            }
+        except UserAuthenticationError as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.UNAUTHORIZED
+            }
+        except Exception as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR
+            }
+
+
+    def __get_jobs(self):
+        try:
+            jobs = self._product_manager_service.get_jobs()
+            return {
+                'statusCode': HTTPStatus.OK,
+                'body': jobs
+            }
+        except IllegalArgumentError as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.BAD_REQUEST
+            }
+        except Exception as error:
+            logging.exception(error)
             return {
                 'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR
             }

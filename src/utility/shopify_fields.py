@@ -9,10 +9,19 @@ published
 option1Name
 option2Name
 option3Name
+imageSrc
+imageAltText //not used now
+status
+seoTitle
+seoDescription
+customCollections
+metafields //not used now
+
+variantSku
+variantBarcode
 option1Value
 option2Value
 option3Value
-variantSku
 variantWeight
 variantTracked
 variantQuantity
@@ -21,15 +30,7 @@ variantPrice
 variantCompareAtPrice
 variantRequireShipping
 variantTaxable
-variantBarcode
-imageSrc
-imageAltText
-seoTitle
-seoDescription
 variantImage
 variantTaxcode
 variantCost
-status
-customCollections
-metafields
 """

@@ -52,5 +52,4 @@ def route(request_path, request_method, request):
     http response
     """
 
-    if request_path == '/upload' or request_path == '/run':
-        return ProductManagerController(request, request_method, request_path).invoke()
+    return ProductManagerController(request, request_method, request_path).invoke()

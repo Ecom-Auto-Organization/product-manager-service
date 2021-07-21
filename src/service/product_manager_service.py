@@ -3,6 +3,7 @@ import json
 import email
 import base64
 from datamodel.custom_exceptions import IllegalArgumentError
+from datamodel.custom_exceptions import UserAuthenticationError
 from dataaccess.product_manager_data_access import ProductManagerDataAccess
 from datamodel.custom_enums import FileType
 from datamodel.custom_enums import HeaderOption
@@ -126,8 +127,54 @@ class ProductManagerService:
             return job_details
         else:
             raise IllegalArgumentError('Unrecognized job type')
-    
-    
+
+
+    def get_user(self):
+        if 'userId' not in self._user_context:
+            raise IllegalArgumentError('UserId not present in request')
+        
+        user_id = self._user_context.get('userId')
+        user_details = self._pm_access.get_user_by_id(user_id)
+
+        # we need to check to ensure user is still active.
+        if user_details.get('active') is not True:
+            raise UserAuthenticationError('User is not active. User: ' + user_id)
+        
+        return {
+           'name': user_details.get('owner'),
+           'email': user_details.get('email'),
+           'reviewed': user_details.get('reviewed'),
+           'shopName': user_details.get('shop_name'),
+           'shopDomain': user_details.get('domain'),
+           'subscribtion': user_details.get('subscribtion'),
+           'timeZone': user_details.get('time_zone'),
+           'jobCount': int(user_details.get('job_count')),
+           'activeJobCount': int(user_details.get('active_job_count'))
+        }
+
+
+    def get_jobs(self):
+        if 'userId' not in self._user_context:
+            raise IllegalArgumentError('UserId not present in request') 
+        
+        lastKey = None
+        # Get last key if it exist in request. If request is coming from front end
+        # then the last key should be present if the request body is not null
+        if self._request_body is not None:
+            lastKeyStr = self._request_body.get('lastKey')
+            lastKeyArr = lastKeyStr.split('~')
+            lastKey = {
+                'PK': lastKeyArr[0],
+                'SK': lastKeyArr[1],
+                'SK1': lastKeyArr[2]
+            }
+
+        user_id = self._user_context.get('userId')
+        user_jobs = self._pm_access.get_jobs(user_id, lastKey)
+        return user_jobs
+
+
+
     def __create_import_job(self):
         """ Gets the details of a task request and create product import job to be run"""
 

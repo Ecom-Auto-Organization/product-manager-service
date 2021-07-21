@@ -3,6 +3,7 @@ import dataaccess.data_model_utils as data_utils
 from utility import utils
 import boto3
 from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key
 import os
 import logging
 import json
@@ -23,6 +24,7 @@ class ProductManagerDataAccess:
         self._bulk_manager_table =  self._dynamodb.Table(bulk_manager_table) 
         self._sns_client = boto3.client('sns')
     
+    
     def save_to_s3 (self, file_key, file_content):
         try:
             response = self._s3_client.put_object (
@@ -31,6 +33,23 @@ class ProductManagerDataAccess:
                 Key=file_key
             )
             return True
+        except ClientError as error:
+            raise DataAccessError(error)
+
+
+    def get_user_by_id(self, user_id):
+        user_to_get = {'id': user_id}
+        db_user = data_utils.convert_to_db_user(user_to_get)
+
+        try:
+            response = self._bulk_manager_table.get_item(Key=db_user)
+            user = None
+            if 'Item' in response:
+                db_user = response['Item']
+                user = data_utils.extract_user_details(db_user)
+
+            return user
+        
         except ClientError as error:
             raise DataAccessError(error)
 
@@ -108,6 +127,44 @@ class ProductManagerDataAccess:
         except ClientError as error:
             raise DataAccessError(error)
         except Exception as error:
+            raise DataAccessError(error)
+
+
+    def get_jobs(self, user_id, lastEvaluatedKey=None):
+        user_id = utils.join_str('user#', user_id)
+        limit = 500
+
+        try:
+            # For now boto3 doesn't allow Empty or none value for ExclusiveStartKey so if there is an 
+            # exclusive start key, I make another method :(
+            if lastEvaluatedKey is None:
+                response = self._bulk_manager_table.query(
+                    IndexName = 'GSI2',
+                    KeyConditionExpression=Key('SK').eq(user_id),
+                    ScanIndexForward=False,
+                    Limit=limit,
+                )
+            else:
+                response = self._bulk_manager_table.query(
+                    IndexName = 'GSI2',
+                    KeyConditionExpression=Key('SK').eq(user_id),
+                    ScanIndexForward=False,
+                    Limit=limit,
+                    ExclusiveStartKey=lastEvaluatedKey
+                )
+
+            # The 'Item' property should always exist in the query response.
+            if 'Items' not in response: 
+                raise DataAccessError('Error occurred whiles in user jobs query. Details: user_id: ' + user_id + ' lastKey: ' + lastEvaluatedKey)
+            
+            response_items = response['Items']
+            jobs = [data_utils.extract_job_details(item) for item in response_items]
+            lastKey = None
+            if 'LastEvaluatedKey' in response: lastKey = response['LastEvaluatedKey']['PK'] + '~' + response['LastEvaluatedKey']['SK']
+            query_res = {'jobs': jobs}
+            if lastKey is not None: query_res['lastKey'] = lastKey
+            return query_res
+        except ClientError as error:
             raise DataAccessError(error)
 
 
