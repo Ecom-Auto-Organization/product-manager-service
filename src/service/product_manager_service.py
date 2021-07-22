@@ -156,23 +156,25 @@ class ProductManagerService:
     def get_jobs(self):
         if 'userId' not in self._user_context:
             raise IllegalArgumentError('UserId not present in request') 
-        
-        lastKey = None
-        # Get last key if it exist in request. If request is coming from front end
-        # then the last key should be present if the request body is not null
-        if self._request_body is not None:
-            lastKeyStr = self._request_body.get('lastKey')
-            lastKeyArr = lastKeyStr.split('~')
-            lastKey = {
-                'PK': lastKeyArr[0],
-                'SK': lastKeyArr[1],
-                'SK1': lastKeyArr[2]
-            }
 
         user_id = self._user_context.get('userId')
-        user_jobs = self._pm_access.get_jobs(user_id, lastKey)
+        user_jobs = self._pm_access.get_jobs(user_id)
         return user_jobs
 
+
+    def get_job_details(self):
+        if 'userId' not in self._user_context:
+            raise IllegalArgumentError('UserId not present in request') 
+        if self._path_params is None:
+            raise IllegalArgumentError('Job id is not present in request') 
+        if 'jobId' not in self._path_params:
+            raise IllegalArgumentError('Job id is not present in request path params') 
+
+        user_id = self._user_context.get('userId')
+        job_id = self._path_params.get('jobId')
+        primaryKey = {'id': job_id, 'user_id': user_id}
+        job = self._pm_access.get_job_details(primaryKey)
+        return job
 
 
     def __create_import_job(self):

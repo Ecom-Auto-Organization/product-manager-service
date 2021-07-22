@@ -17,7 +17,7 @@ def lambda_handler(event, context):
         API Gateway Lambda Proxy Output Format: dict
     """
 
-    request_path = event.get('path')
+    request_path = event.get('resource')
     request_method = event.get('httpMethod')
     request = {
         'body': event.get('body'), 

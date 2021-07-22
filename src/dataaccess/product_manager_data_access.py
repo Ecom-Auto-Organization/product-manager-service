@@ -130,21 +130,29 @@ class ProductManagerDataAccess:
             raise DataAccessError(error)
 
 
-    def get_jobs(self, user_id, lastEvaluatedKey=None):
+    def get_jobs(self, user_id):
+        # The maximum size of data that can be retrieved from dynamodb is 1MB so we will be retrieving data in batches.
         user_id = utils.join_str('user#', user_id)
         limit = 500
+        response_items = []
+        lastEvaluatedKey = None
 
         try:
-            # For now boto3 doesn't allow Empty or none value for ExclusiveStartKey so if there is an 
-            # exclusive start key, I make another method :(
-            if lastEvaluatedKey is None:
-                response = self._bulk_manager_table.query(
-                    IndexName = 'GSI2',
-                    KeyConditionExpression=Key('SK').eq(user_id),
-                    ScanIndexForward=False,
-                    Limit=limit,
-                )
-            else:
+            response = self._bulk_manager_table.query(
+                IndexName = 'GSI2',
+                KeyConditionExpression=Key('SK').eq(user_id),
+                ScanIndexForward=False,
+                Limit=limit,
+            )
+            # The 'Item' property should always exist in the query response.
+            if 'Items' not in response: 
+                raise DataAccessError('Error occurred whiles querying for user jobs. Details: user_id: ' + user_id + ' response: ' + response)  
+            response_items.extend(response['Items'])   
+            
+            # LastEvaluatedKey indicates that there is still data to be retrieved from the query,
+            # we will keep on querying until there is not lastevaluatedkey in the response.
+            if 'LastEvaluatedKey' in response: lastEvaluatedKey = response['LastEvaluatedKey']  
+            while lastEvaluatedKey is not None:
                 response = self._bulk_manager_table.query(
                     IndexName = 'GSI2',
                     KeyConditionExpression=Key('SK').eq(user_id),
@@ -152,18 +160,33 @@ class ProductManagerDataAccess:
                     Limit=limit,
                     ExclusiveStartKey=lastEvaluatedKey
                 )
+                if 'Items' not in response: 
+                    raise DataAccessError('Error occurred whiles in user jobs query. Details: user_id: ' + user_id + ' response: ' + response)  
+                response_items.extend(response['Items'])  
+                if 'LastEvaluatedKey' in response: 
+                    lastEvaluatedKey = response['LastEvaluatedKey']
+                else:
+                    lastEvaluatedKey = None  
 
-            # The 'Item' property should always exist in the query response.
-            if 'Items' not in response: 
-                raise DataAccessError('Error occurred whiles in user jobs query. Details: user_id: ' + user_id + ' lastKey: ' + lastEvaluatedKey)
-            
-            response_items = response['Items']
+            if len(response_items) == 0: return []
             jobs = [data_utils.extract_job_details(item) for item in response_items]
-            lastKey = None
-            if 'LastEvaluatedKey' in response: lastKey = response['LastEvaluatedKey']['PK'] + '~' + response['LastEvaluatedKey']['SK']
-            query_res = {'jobs': jobs}
-            if lastKey is not None: query_res['lastKey'] = lastKey
-            return query_res
+            return jobs
+        except ClientError as error:
+            raise DataAccessError(error)
+        except Exception as error:
+            raise DataAccessError(error)
+
+
+    def get_job_details(self, jobObject):
+        db_job = data_utils.convert_to_db_job(jobObject)
+
+        try:
+            response = self._bulk_manager_table.get_item(Key=db_job)
+            job = None
+            if 'Item' in response:
+                db_job = response['Item']
+                job = data_utils.extract_job_details(db_job)
+            return job
         except ClientError as error:
             raise DataAccessError(error)
 

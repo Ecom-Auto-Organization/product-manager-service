@@ -1,7 +1,7 @@
 {
-    "resource": "/jobs",
-    "path": "/jobs",
-    "httpMethod": "POST",
+    "resource": "/jobs/{jobId}",
+    "path": "/jobs/82884721-6a31-48fc-926c-033f0cda5572",
+    "httpMethod": "GET",
     "headers": {
         "Accept": "*/*",
         "Accept-Encoding": "gzip, deflate, br",
@@ -9,9 +9,9 @@
         "Cache-Control": "no-cache",
         "Content-Type": "application/json",
         "Host": "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com",
-        "Postman-Token": "cdc43809-fda2-4d56-9bf2-eb76e5b1778e",
+        "Postman-Token": "5a18f15b-dffd-44a0-a578-4411ab4d48ca",
         "User-Agent": "PostmanRuntime/7.28.1",
-        "X-Amzn-Trace-Id": "Root=1-60f8c870-4856f8ee4b0b56ae67496e0a",
+        "X-Amzn-Trace-Id": "Root=1-60f8d614-515a74b464e5fdaf7cfad88a",
         "X-Forwarded-For": "99.155.186.9",
         "X-Forwarded-Port": "443",
         "X-Forwarded-Proto": "https"
@@ -36,13 +36,13 @@
             "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com"
         ],
         "Postman-Token": [
-            "cdc43809-fda2-4d56-9bf2-eb76e5b1778e"
+            "5a18f15b-dffd-44a0-a578-4411ab4d48ca"
         ],
         "User-Agent": [
             "PostmanRuntime/7.28.1"
         ],
         "X-Amzn-Trace-Id": [
-            "Root=1-60f8c870-4856f8ee4b0b56ae67496e0a"
+            "Root=1-60f8d614-515a74b464e5fdaf7cfad88a"
         ],
         "X-Forwarded-For": [
             "99.155.186.9"
@@ -56,26 +56,28 @@
     },
     "queryStringParameters": null,
     "multiValueQueryStringParameters": null,
-    "pathParameters": null,
+    "pathParameters": {
+        "jobId": "82884721-6a31-48fc-926c-033f0cda5572"
+    },
     "stageVariables": null,
     "requestContext": {
-        "resourceId": "hz9hyi",
+        "resourceId": "vc2qm1",
         "authorizer": {
             "principalId": "60c5aa31-221d-464c-9054-ae8c56c1a413",
-            "integrationLatency": 268,
+            "integrationLatency": 254,
             "userId": "60c5aa31-221d-464c-9054-ae8c56c1a413"
         },
-        "resourcePath": "/jobs",
-        "httpMethod": "POST",
-        "extendedRequestId": "C2RBlFDwCYcFmhA=",
-        "requestTime": "22/Jul/2021:01:22:56 +0000",
-        "path": "/dev/jobs",
+        "resourcePath": "/jobs/{jobId}",
+        "httpMethod": "GET",
+        "extendedRequestId": "C2ZjLEg1iYcFhzA=",
+        "requestTime": "22/Jul/2021:02:21:08 +0000",
+        "path": "/dev/jobs/82884721-6a31-48fc-926c-033f0cda5572",
         "accountId": "191337286028",
         "protocol": "HTTP/1.1",
         "stage": "dev",
         "domainPrefix": "8p5lt3lu1b",
-        "requestTimeEpoch": 1626916976384,
-        "requestId": "7062b72e-1194-4d91-9a70-5c4d93c233b4",
+        "requestTimeEpoch": 1626920468124,
+        "requestId": "90aa9d27-210d-42d4-885e-8907606b6d10",
         "identity": {
             "cognitoIdentityPoolId": null,
             "accountId": null,

@@ -43,6 +43,8 @@ class ProductManagerController:
             return self.__get_user_details()
         elif self._path == '/jobs' and self._method == HTTPMethod.POST.name:
             return self.__get_jobs()
+        elif self._path == '/jobs/{jobId}' and self._method == HTTPMethod.GET.name:
+            return self.__get_job_details()
         else:
             logging.error('Invalid Path. Path: ' + self._path)
             return {
@@ -141,7 +143,26 @@ class ProductManagerController:
             jobs = self._product_manager_service.get_jobs()
             return {
                 'statusCode': HTTPStatus.OK,
-                'body': jobs
+                'body': json.dumps(jobs)
+            }
+        except IllegalArgumentError as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.BAD_REQUEST
+            }
+        except Exception as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR
+            }
+
+
+    def __get_job_details(self):
+        try:
+            job = self._product_manager_service.get_job_details()
+            return {
+                'statusCode': HTTPStatus.OK,
+                'body': json.dumps(job)
             }
         except IllegalArgumentError as error:
             logging.exception(error)
