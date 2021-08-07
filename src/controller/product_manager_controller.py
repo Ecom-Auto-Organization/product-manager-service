@@ -4,6 +4,7 @@ from datamodel.custom_exceptions import IllegalArgumentError
 from datamodel.custom_exceptions import DataAccessError
 from datamodel.custom_exceptions import UserAuthenticationError
 from datamodel.custom_exceptions import HeaderRowNotFoundError
+from datamodel.custom_exceptions import WrongFileFormat
 from datamodel.custom_exceptions import EmptySheetError
 from http import HTTPStatus
 import logging
@@ -87,6 +88,12 @@ class ProductManagerController:
             return {
                 'statusCode': HTTPStatus.BAD_REQUEST,
                 'body': json.dumps({'errorCode': 'HEADER_NOT_FOUND'})
+            }
+        except WrongFileFormat as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.BAD_REQUEST,
+                'body': json.dumps({'errorCode': 'WRONG_FILE_FORMAT'})
             }
         except DataAccessError as error:
             logging.exception(error)

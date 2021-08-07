@@ -2,6 +2,7 @@ import pandas as pd
 import io
 from datamodel.custom_exceptions import MissingArgumentError
 from datamodel.custom_exceptions import HeaderRowNotFoundError
+from datamodel.custom_exceptions import WrongFileFormat
 from datamodel.custom_exceptions import EmptySheetError
 from datamodel.custom_enums import FileType
 from datamodel.custom_enums import HeaderOption
@@ -43,7 +44,7 @@ class FileReader:
         elif self._file_type == FileType.CSV:
             df = pd.read_csv(file_bytes, header=header_column_row)
         else:
-            raise MissingArgumentError('Couldn\'t process file. File Type must be either CSV or EXCEL')
+            raise WrongFileFormat('Couldn\'t process file. File Type must be either CSV or EXCEL')
 
         #drop all empty columns and empty row
         df = df.dropna(axis=1, how='all').dropna(axis=0, how='all')

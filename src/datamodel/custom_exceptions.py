@@ -25,3 +25,7 @@ class HeaderRowNotFoundError(Exception):
 class EmptySheetError(Exception):
     """Error thrown when a file does not contain actual non empty rows"""  
     pass
+
+class WrongFileFormat(Exception):
+    """Error thrown when a file does not contain actual non empty rows"""  
+    pass
