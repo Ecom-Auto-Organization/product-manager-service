@@ -36,20 +36,27 @@ class ProductManagerController:
         """
 
         if self._path == '/upload' and self._method == HTTPMethod.POST.name:
-            return self.__get_file_details()
+            response = self.__get_file_details()
         elif self._path == '/run' and self._method == HTTPMethod.POST.name:
-            return self.__put_job()
+            response = self.__put_job()
         elif self._path == '/users' and self._method == HTTPMethod.POST.name:
-            return self.__get_user_details()
+            response = self.__get_user_details()
         elif self._path == '/jobs' and self._method == HTTPMethod.POST.name:
-            return self.__get_jobs()
+            response = self.__get_jobs()
         elif self._path == '/jobs/{jobId}' and self._method == HTTPMethod.GET.name:
-            return self.__get_job_details()
+            response = self.__get_job_details()
         else:
             logging.error('Invalid Path. Path: ' + self._path)
-            return {
+            response = {
                 'statusCode': HTTPStatus.NOT_FOUND
             }
+        if 'headers' not in response:
+            response['headers'] = {
+            "Access-Control-Allow-Headers" : "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+        }
+        return response
 
     
     def __get_file_details(self):

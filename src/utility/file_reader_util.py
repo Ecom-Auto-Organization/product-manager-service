@@ -78,9 +78,13 @@ class FileReader:
         for index in range(len(original_header_columns)):
             column = {}
             sample_data = df[original_header_columns[index]].values.tolist()[values_start_index: last_sample_Data_index]
+            filtered_sample = []
+            for item in sample_data:
+                if pd.notnull(item) and str(item).strip() != '':
+                    filtered_sample.append(item)
             column['name'] = actual_columns[index]
             column['index'] = index
-            column['sampleData'] = sample_data
+            column['sampleData'] = filtered_sample
             column['field'] = None
             file_details['columnDetails'].append(column)
         

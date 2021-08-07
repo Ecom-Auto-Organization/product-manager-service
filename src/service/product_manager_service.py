@@ -46,7 +46,12 @@ class ProductManagerService:
         """Decodes excel or csv binary file and returns the details for import"""
 
         multi_form_data = base64.b64decode(self._request_body)
-        content_type = 'Content-Type: ' + self._header.get('Content-Type') + '\n'
+        content_type = None
+        if self._header.get('content-type') is not None:
+            content_type = self._header.get('content-type')
+        elif self._header.get('Content-Type') is not None:
+            content_type = self._header.get('Content-Type')
+        content_type = 'Content-Type: ' + content_type + '\n'
         form_data = email.message_from_bytes(content_type.encode() + multi_form_data)
 
         if not form_data.is_multipart():
@@ -69,7 +74,7 @@ class ProductManagerService:
             form_content[name] = part_payload
         
         file_type = None
-        if form_content['file']['content_type'] == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        if form_content['file']['content_type'] == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' or form_content['file']['content_type'] =='application/vnd.ms-excel':
             file_type = FileType.EXCEL
         elif form_content['file']['content_type'] == 'text/csv':
             file_type = FileType.CSV
@@ -111,7 +116,6 @@ class ProductManagerService:
 
         self._pm_access.save_to_s3(file_s3_key, form_content['file']['content'])
         self._pm_access.put_file(file_obj)
-
         return file_details
 
 
@@ -121,7 +125,8 @@ class ProductManagerService:
             job_details = self.__create_import_job()
             publish_message = {
                 'fileId': self._request_body.get('fileId'),
-                'jobId': job_details.get('jobId')
+                'jobId': job_details.get('jobId'),
+                'userId': self._user_context.get('userId')
             }
             self._pm_access.publish_to_product_generator(publish_message)  
             return job_details
@@ -190,19 +195,18 @@ class ProductManagerService:
         file_obj = self._pm_access.get_file_by_id(file_id)
         updated_file = {'id': file_obj.get('id'), 'field_details': shopify_field}
         job_id = '' + str(uuid.uuid4())
+        start_time = datetime.utcnow().isoformat() + 'Z'
         new_job = {
             'id': job_id,
             'user_id': self._user_context.get('userId'),
             'status': JobStatus.SUBMITTED.name,
             'type': task_type.name,
-            'options': options
+            'options': options,
+            'start_time': start_time
         }
-        self._pm_access.basic_file_update(updated_file)
-        created_job = self._pm_access.create_job(new_job)
+        created_job = self._pm_access.perform_create_job_transaction(new_job, updated_file)
         return {
-            'jobId': created_job.get('id'),
-            'status': created_job.get('status'),
-            'jobType': created_job.get('type')
+            'jobId': created_job.get('id')
         }
 
 

@@ -19,6 +19,7 @@ class ProductManagerDataAccess:
     def __init__(self):
         self._upload_bucket = os.environ.get('s3_file_upload_bucket')
         self._s3_client = boto3.client('s3')
+        self._dynamo_client = boto3.client('dynamodb')
         bulk_manager_table = os.environ.get('bulk_manager_table')
         self._dynamodb = boto3.resource('dynamodb')
         self._bulk_manager_table =  self._dynamodb.Table(bulk_manager_table) 
@@ -124,6 +125,59 @@ class ProductManagerDataAccess:
 
             logging.info('Created Job successfully. Details: %s', db_job)
             return data_utils.extract_job_details(db_job)
+        except ClientError as error:
+            raise DataAccessError(error)
+        except Exception as error:
+            raise DataAccessError(error)
+
+
+    def perform_create_job_transaction(self, job, updated_file):
+        expression_attr_values = {':details': { 'S': json.dumps(updated_file['field_details'])}}
+        try:
+            response = self._dynamo_client.transact_write_items(
+                TransactItems=[
+                    {
+                        'Put': {
+                            'TableName': os.environ.get('bulk_manager_table'),
+                            'Item': {
+                                'PK': { 'S': utils.join_str('job#', job['id']) },
+                                'SK': { 'S': utils.join_str('user#', job['user_id']) },
+                                'SK1': { 'S': utils.join_str(job['start_time']) },
+                                'SK2': { 'S': utils.join_str(job['type'], '#', job['start_time']) },
+                                'status': { 'S': job['status'] },
+                                'options': {'S': json.dumps(job['options'])}
+                            },
+                            'ConditionExpression': 'attribute_not_exists(PK)'
+                        }
+                    },
+                    {
+                        'Update': {
+                            'TableName': os.environ.get('bulk_manager_table'),
+                            'Key': {
+                                'PK': { 'S': utils.join_str('file#', updated_file['id']) },
+                                'SK': { 'S': 'file' },
+                            },
+                            'UpdateExpression': 'SET field_details=:details',
+                            'ExpressionAttributeValues': expression_attr_values
+                        }
+                    },
+                    {
+                        'Update': {
+                            'TableName': os.environ.get('bulk_manager_table'),
+                            'Key': {
+                                'PK': { 'S': utils.join_str('user#', job['user_id']) },
+                                'SK': { 'S': 'user' },
+                            },
+                            'UpdateExpression': 'SET job_count = job_count + :incr',
+                            'ExpressionAttributeValues': {
+                                ':incr': { 'N': '1' }
+                            }
+                        }
+                    }
+                ]
+            )
+            logging.info('Job creation transaction completed successfully. Details: %s', job)
+            return {'id': job['id']}
         except ClientError as error:
             raise DataAccessError(error)
         except Exception as error:
