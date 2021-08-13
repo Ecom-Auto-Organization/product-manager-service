@@ -7,6 +7,9 @@ from boto3.dynamodb.conditions import Key
 import os
 import logging
 import json
+import requests
+from http import HTTPStatus
+from datamodel.custom_exceptions import ShopifyUnauthorizedError
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,6 +27,7 @@ class ProductManagerDataAccess:
         self._dynamodb = boto3.resource('dynamodb')
         self._bulk_manager_table =  self._dynamodb.Table(bulk_manager_table) 
         self._sns_client = boto3.client('sns')
+        self._api_version = os.environ.get('shopify_api_version')
     
     
     def save_to_s3 (self, file_key, file_content):
@@ -231,6 +235,50 @@ class ProductManagerDataAccess:
             raise DataAccessError(error)
 
 
+    def get_job_results(self, job_id):
+        # The maximum size of data that can be retrieved from dynamodb is 1MB so we will be retrieving data in batches.
+        job_id = utils.join_str('job#', job_id)
+        limit = 500
+        response_items = []
+        lastEvaluatedKey = None
+
+        try:
+            response = self._bulk_manager_table.query(
+                IndexName = 'GSI1',
+                KeyConditionExpression=Key('SK').eq(job_id),
+                Limit=limit,
+            )
+            # The 'Item' property should always exist in the query response.
+            if 'Items' not in response: 
+                raise DataAccessError('Error occurred whiles querying for job results. Details: job_id: ' + job_id + ' response: ' + response)  
+            response_items.extend(response['Items'])   
+            
+            # LastEvaluatedKey indicates that there is still data to be retrieved from the query,
+            # we will keep on querying until there is not lastevaluatedkey in the response.
+            if 'LastEvaluatedKey' in response: lastEvaluatedKey = response['LastEvaluatedKey']  
+            while lastEvaluatedKey is not None:
+                response = self._bulk_manager_table.query(
+                    IndexName = 'GSI1',
+                    KeyConditionExpression=Key('SK').eq(job_id),
+                    Limit=limit,
+                    ExclusiveStartKey=lastEvaluatedKey
+                )
+                if 'Items' not in response: 
+                    raise DataAccessError('Error occurred whiles querying for job results. Details: job_id: ' + job_id + ' response: ' + response)  
+                response_items.extend(response['Items'])  
+                if 'LastEvaluatedKey' in response: 
+                    lastEvaluatedKey = response['LastEvaluatedKey']
+                else:
+                    lastEvaluatedKey = None  
+            if len(response_items) == 0: return []
+            job_results = [data_utils.extract_job_result_details(item) for item in response_items]
+            return job_results
+        except ClientError as error:
+            raise DataAccessError(error)
+        except Exception as error:
+            raise DataAccessError(error)
+
+
     def get_job_details(self, jobObject):
         db_job = data_utils.convert_to_db_job(jobObject)
 
@@ -262,3 +310,28 @@ class ProductManagerDataAccess:
                 return True
         except Exception as error:
             raise Exception('Could not publish message successfully. Error:' + str(error))
+
+
+    def get_locations(self, domain, access_token):
+        url = 'https://' + domain + '/admin/api/' + self._api_version + '/graphql.json'
+        headers = {'Content-Type': 'application/json', 'X-Shopify-Access-Token': access_token}
+
+        query =  """query {
+                    locations(first:5) {
+                        edges {
+                            node {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }"""
+        response = None
+        response = requests.post(url, json={'query': query}, headers=headers)
+        if response.status_code == HTTPStatus.OK:
+            result = response.json()
+            return result
+        elif response.status_code == HTTPStatus.UNAUTHORIZED:
+            raise ShopifyUnauthorizedError("Shopify graphql request did not have the necessary credentials")
+        else:
+            raise DataAccessError('Product create request failed. Status Code: ' + str(response.status_code))

@@ -182,3 +182,28 @@ def convert_to_db_user (user):
         db_user['active_job_count'] = user['active_job_count']
 
     return db_user
+
+
+def extract_job_result_details(db_result):
+    delimeter = '#'
+    job_result = {}
+    job_result['id'] = utils.extract_str(db_result['PK'], delimeter, 1)
+    job_result['job_id'] = utils.extract_str(db_result['SK'], delimeter, 1)
+    if 'status' in db_result:
+        job_result['status'] = db_result['status']
+    job_result['messages'] = []
+    if 'errors' in db_result:
+        job_result['messages'].extend(json.loads(db_result['errors']))
+    if 'warnings' in db_result:
+        job_result['messages'].extend(json.loads(db_result['warnings']))
+    if 'data' in db_result:
+        job_data = json.loads(db_result['data'])
+        if 'id' in job_data:
+            job_result['product_id'] = utils.extract_str(job_data['id'], '/', -1)
+        if 'title' in job_data:
+            job_result['product_title'] = job_data['title']
+        if 'featuredImage' in job_data:
+            job_result['featured_image'] = job_data['featuredImage']['originalSrc']
+        elif 'images' in job_data and len(job_data['images']) > 0:
+            job_result['featured_image'] = job_data['images'][0]['src']
+    return job_result

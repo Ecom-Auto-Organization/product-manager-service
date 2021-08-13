@@ -53,6 +53,8 @@ class ProductManagerService:
             content_type = self._header.get('Content-Type')
         content_type = 'Content-Type: ' + content_type + '\n'
         form_data = email.message_from_bytes(content_type.encode() + multi_form_data)
+        user_id = self._user_context.get('userId')
+        user_details = self._pm_access.get_user_by_id(user_id)
 
         if not form_data.is_multipart():
             raise IllegalArgumentError('Form data could not be processed. Multipart is False')
@@ -97,6 +99,8 @@ class ProductManagerService:
         
         file_reader = FileReader(file_reader_info=reader_info)
         file_details = file_reader.get_file_details()
+        locations_response = self._pm_access.get_locations(user_details.get('domain'), user_details.get('access_token'))
+        locations = self.__parse_locations(locations_response)
         file_id = '' + str(uuid.uuid4())
         
         file_s3_key = file_id + '_' + form_content['file']['file_name']
@@ -112,6 +116,7 @@ class ProductManagerService:
 
         file_details['fileName'] = form_content['file']['file_name']
         file_details['fileId'] = file_id
+        file_details['locations'] = locations
         del file_details['headerRow']
 
         self._pm_access.save_to_s3(file_s3_key, form_content['file']['content'])
@@ -167,14 +172,27 @@ class ProductManagerService:
         return user_jobs
 
 
+    def get_job_results(self):
+        if 'userId' not in self._user_context:
+            raise IllegalArgumentError('UserId not present in request') 
+        if self._path_params is None:
+            raise IllegalArgumentError('Job id is not present in job results request') 
+        if 'jobId' not in self._path_params:
+            raise IllegalArgumentError('Job id is not present in job results request path params')
+        
+        job_id = self._path_params.get('jobId')
+        job_results = self._pm_access.get_job_results(job_id)
+        return job_results
+
+
     def get_job_details(self):
         if 'userId' not in self._user_context:
             raise IllegalArgumentError('UserId not present in request') 
         if self._path_params is None:
-            raise IllegalArgumentError('Job id is not present in request') 
+            raise IllegalArgumentError('Job id is not present in job details request') 
         if 'jobId' not in self._path_params:
-            raise IllegalArgumentError('Job id is not present in request path params') 
-
+            raise IllegalArgumentError('Job id is not present in job details request path params') 
+        #ls sda
         user_id = self._user_context.get('userId')
         job_id = self._path_params.get('jobId')
         primaryKey = {'id': job_id, 'user_id': user_id}
@@ -242,4 +260,18 @@ class ProductManagerService:
                 if column_field == 'variantQuantity':
                     location_set.add(column['location'])
         return shopify_field
+
+
+    def __parse_locations(self, response):
+        locations = []
+        if response['data']['locations']['edges'] is not None:
+            edges = response['data']['locations']['edges']
+            for edge in edges:
+                locations.append({
+                    'id': edge['node']['id'],
+                    'name': edge['node']['name']
+                })
+        else:
+            raise Exception('Could not find user locations. Location Response: ', response)
+        return locations
 

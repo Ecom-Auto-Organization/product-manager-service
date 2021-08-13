@@ -2,6 +2,7 @@ from datamodel.custom_enums import HTTPMethod
 from service.product_manager_service import ProductManagerService
 from datamodel.custom_exceptions import IllegalArgumentError
 from datamodel.custom_exceptions import DataAccessError
+from datamodel.custom_exceptions import ShopifyUnauthorizedError
 from datamodel.custom_exceptions import UserAuthenticationError
 from datamodel.custom_exceptions import HeaderRowNotFoundError
 from datamodel.custom_exceptions import WrongFileFormat
@@ -46,6 +47,8 @@ class ProductManagerController:
             response = self.__get_jobs()
         elif self._path == '/jobs/{jobId}' and self._method == HTTPMethod.GET.name:
             response = self.__get_job_details()
+        elif self._path == '/jobs/{jobId}/results' and self._method == HTTPMethod.GET.name:
+            response = self.__get_job_results()
         else:
             logging.error('Invalid Path. Path: ' + self._path)
             response = {
@@ -95,7 +98,7 @@ class ProductManagerController:
                 'statusCode': HTTPStatus.BAD_REQUEST,
                 'body': json.dumps({'errorCode': 'WRONG_FILE_FORMAT'})
             }
-        except DataAccessError as error:
+        except (DataAccessError, ShopifyUnauthorizedError) as error:
             logging.exception(error)
             return {
                 'statusCode': HTTPStatus.SERVICE_UNAVAILABLE
@@ -177,6 +180,25 @@ class ProductManagerController:
             return {
                 'statusCode': HTTPStatus.OK,
                 'body': json.dumps(job)
+            }
+        except IllegalArgumentError as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.BAD_REQUEST
+            }
+        except Exception as error:
+            logging.exception(error)
+            return {
+                'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR
+            }
+
+
+    def __get_job_results(self):
+        try:
+            job_results = self._product_manager_service.get_job_results()
+            return {
+                'statusCode': HTTPStatus.OK,
+                'body': json.dumps(job_results)
             }
         except IllegalArgumentError as error:
             logging.exception(error)

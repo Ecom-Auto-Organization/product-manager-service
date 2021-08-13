@@ -1,0 +1,96 @@
+{
+    "resource": "/jobs/{jobId}/results",
+    "path": "/jobs/9850c9c8-e470-4e43-bf4c-cf7ddf06149a/results",
+    "httpMethod": "GET",
+    "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Authorization": "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYwYzVhYTMxLTIyMWQtNDY0Yy05MDU0LWFlOGM1NmMxYTQxMyIsImlhdCI6MTYyMDYxMDY0Ni4wOTY1MDJ9.QKtaHB2ERe1g-Gw0XsHg604yTWrajJH95lL7Tcw2l4c",
+        "Cache-Control": "no-cache",
+        "Host": "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com",
+        "Postman-Token": "b553e35a-47df-4e96-a910-0d20845f001f",
+        "User-Agent": "PostmanRuntime/7.28.1",
+        "X-Amzn-Trace-Id": "Root=1-6115cb33-167663f45448edde2783c440",
+        "X-Forwarded-For": "99.155.186.9",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept": [
+            "*/*"
+        ],
+        "Accept-Encoding": [
+            "gzip, deflate, br"
+        ],
+        "Authorization": [
+            "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYwYzVhYTMxLTIyMWQtNDY0Yy05MDU0LWFlOGM1NmMxYTQxMyIsImlhdCI6MTYyMDYxMDY0Ni4wOTY1MDJ9.QKtaHB2ERe1g-Gw0XsHg604yTWrajJH95lL7Tcw2l4c"
+        ],
+        "Cache-Control": [
+            "no-cache"
+        ],
+        "Host": [
+            "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com"
+        ],
+        "Postman-Token": [
+            "b553e35a-47df-4e96-a910-0d20845f001f"
+        ],
+        "User-Agent": [
+            "PostmanRuntime/7.28.1"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-6115cb33-167663f45448edde2783c440"
+        ],
+        "X-Forwarded-For": [
+            "99.155.186.9"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": {
+        "jobId": "9850c9c8-e470-4e43-bf4c-cf7ddf06149a"
+    },
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "0bnv2i",
+        "authorizer": {
+            "principalId": "60c5aa31-221d-464c-9054-ae8c56c1a413",
+            "integrationLatency": 21,
+            "userId": "60c5aa31-221d-464c-9054-ae8c56c1a413"
+        },
+        "resourcePath": "/jobs/{jobId}/results",
+        "httpMethod": "GET",
+        "extendedRequestId": "D-ywGFDRCYcF_AQ=",
+        "requestTime": "13/Aug/2021:01:30:27 +0000",
+        "path": "/dev/jobs/9850c9c8-e470-4e43-bf4c-cf7ddf06149a/results",
+        "accountId": "191337286028",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "domainPrefix": "8p5lt3lu1b",
+        "requestTimeEpoch": 1628818227687,
+        "requestId": "300c3c56-0308-4366-bce6-d53bc6b6abe4",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "99.155.186.9",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "PostmanRuntime/7.28.1",
+            "user": null
+        },
+        "domainName": "8p5lt3lu1b.execute-api.us-east-2.amazonaws.com",
+        "apiId": "8p5lt3lu1b"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}
