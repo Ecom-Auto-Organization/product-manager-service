@@ -1,6 +1,6 @@
 {
     "resource": "/jobs/{jobId}",
-    "path": "/jobs/82884721-6a31-48fc-926c-033f0cda5572",
+    "path": "/jobs/9850c9c8-e470-4e43-bf4c-cf7ddf06149a",
     "httpMethod": "GET",
     "headers": {
         "Accept": "*/*",
@@ -57,7 +57,7 @@
     "queryStringParameters": null,
     "multiValueQueryStringParameters": null,
     "pathParameters": {
-        "jobId": "82884721-6a31-48fc-926c-033f0cda5572"
+        "jobId": "9850c9c8-e470-4e43-bf4c-cf7ddf06149a"
     },
     "stageVariables": null,
     "requestContext": {
@@ -71,7 +71,7 @@
         "httpMethod": "GET",
         "extendedRequestId": "C2ZjLEg1iYcFhzA=",
         "requestTime": "22/Jul/2021:02:21:08 +0000",
-        "path": "/dev/jobs/82884721-6a31-48fc-926c-033f0cda5572",
+        "path": "/dev/jobs/9850c9c8-e470-4e43-bf4c-cf7ddf06149a",
         "accountId": "191337286028",
         "protocol": "HTTP/1.1",
         "stage": "dev",

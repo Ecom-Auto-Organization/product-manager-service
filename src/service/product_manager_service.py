@@ -192,11 +192,14 @@ class ProductManagerService:
             raise IllegalArgumentError('Job id is not present in job details request') 
         if 'jobId' not in self._path_params:
             raise IllegalArgumentError('Job id is not present in job details request path params') 
-        #ls sda
+
         user_id = self._user_context.get('userId')
         job_id = self._path_params.get('jobId')
         primaryKey = {'id': job_id, 'user_id': user_id}
         job = self._pm_access.get_job_details(primaryKey)
+        if job['status'] == 'COMPLETED' or job['status'] == 'FAILED' or job['status'] == 'PARTIALLY COMPLETED':
+            job_results = self._pm_access.get_job_results(job_id)
+            job['results'] = job_results
         return job
 
 
