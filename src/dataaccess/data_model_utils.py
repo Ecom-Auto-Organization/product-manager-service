@@ -203,7 +203,13 @@ def extract_job_result_details(db_result):
         if 'title' in job_data:
             job_result['product_title'] = job_data['title']
         if 'featuredImage' in job_data:
-            job_result['featured_image'] = job_data['featuredImage']['originalSrc']
+            if job_data['featuredImage'] is not None:
+                job_result['featured_image'] = job_data['featuredImage']['originalSrc']
+            else:
+                job_result['featured_image'] = ''
         elif 'images' in job_data and len(job_data['images']) > 0:
-            job_result['featured_image'] = job_data['images'][0]['src']
+            if job_data['images'][0]['src'] is not None:
+                job_result['featured_image'] = job_data['images'][0]['src']
+            else:
+                job_result['featured_image'] = ''
     return job_result
