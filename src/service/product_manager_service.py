@@ -81,7 +81,15 @@ class ProductManagerService:
         elif form_content['file']['content_type'] == 'text/csv':
             file_type = FileType.CSV
         else:
-            logging.error('Does not recognize media type: %s', form_content['file']['content_type'])
+            if form_content['file']['file_name'] is not None or form_content['file']['file_name'] != '':
+                file_name = form_content['file']['file_name']
+                file_ext = file_name.split('.')[-1]
+                if file_ext == 'xlsx' or file_ext == 'xls':
+                    file_type = FileType.EXCEL
+                elif file_ext == 'csv':
+                   file_type = FileType.CSV 
+    
+        if file_type == None: logging.error('Does not recognize media type. File details: %s', form_content['file'])
 
         reader_info = {
             'file': form_content['file']['content'],
