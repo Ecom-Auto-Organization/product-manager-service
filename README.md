@@ -4,7 +4,7 @@ This repository contains the code for the core ecompal product import API.
 
 Endpoints Include: 
 
-- User: Create and authentication users
+- User: Create and get the user details
 - Job - Creating and updating jobs (jobs are tasks created for importing products into shopify)
 - upload - Accepts an excel or csv file and returns the details of the file (ie. products and their details). 
 - run - start a job for creating products on shoopify.
